@@ -56,24 +56,32 @@
         </nav>
       </section>
 
-      <aside class="card memo-card" aria-label="メモとTodo">
+      <aside class="card status-card" aria-label="ブラウザステータス">
+        <div class="card-header">
+          <h2>STATUS</h2>
+          <span aria-hidden="true">◌</span>
+        </div>
+        <div id="statusList" class="status-list"></div>
+      </aside>
+
+      <aside class="card todo-card" aria-label="Todo">
+        <div class="card-header">
+          <h2>TODO</h2>
+          <span id="todoCount" aria-hidden="true">0</span>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+        <form class="todo-add" id="todoForm">
+          <input id="todoInput" type="text" placeholder="Todo を追加..." aria-label="Todo を追加" />
+          <button type="submit" aria-label="Todo を追加">＋</button>
+        </form>
+      </aside>
+
+      <aside class="card memo-card" aria-label="メモ">
         <div class="card-header">
           <h2>MEMO</h2>
           <span aria-hidden="true">⌖</span>
         </div>
-
-        <ul class="todo-list" id="todoList"></ul>
-
-        <form class="todo-add" id="todoForm">
-          <input id="todoInput" type="text" placeholder="Todo を追加..." aria-label="Todo を追加" />
-          <button type="submit">＋</button>
-        </form>
-
-        <textarea id="memoText" rows="4" placeholder="メモを入力..." aria-label="自由入力メモ"></textarea>
-      </aside>
-
-      <aside class="card status-card" aria-label="ステータス">
-        <div id="statusList" class="status-list"></div>
+        <textarea id="memoText" rows="8" placeholder="メモを書く" aria-label="自由入力メモ"></textarea>
       </aside>
 
       <button class="settings-button" type="button" aria-label="設定（未実装）">⚙</button>
