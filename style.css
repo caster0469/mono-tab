@@ -13,9 +13,7 @@
   --font: "JetBrainsMono Nerd Font", "Noto Sans CJK JP", sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html,
 body {
@@ -35,17 +33,10 @@ body {
 
 button,
 input,
-textarea {
-  color: inherit;
-  font: inherit;
-}
+textarea { color: inherit; font: inherit; }
 
 .background-grid,
-.background-waves {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
+.background-waves { position: fixed; inset: 0; pointer-events: none; }
 
 .background-grid {
   opacity: 0.28;
@@ -94,11 +85,7 @@ textarea {
   text-shadow: 0 20px 60px var(--shadow);
 }
 
-.date {
-  margin-top: clamp(8px, 1.8vh, 18px);
-  color: var(--text);
-  font-size: clamp(1rem, 2.2vw, 1.35rem);
-}
+.date { margin-top: clamp(8px, 1.8vh, 18px); font-size: clamp(1rem, 2.2vw, 1.35rem); }
 
 .search {
   display: flex;
@@ -114,26 +101,9 @@ textarea {
   backdrop-filter: blur(18px);
 }
 
-.search-icon {
-  color: var(--text);
-  font-size: 2rem;
-  margin-right: 16px;
-}
-
-.search input {
-  width: 100%;
-  height: clamp(46px, 6vh, 62px);
-  background: transparent;
-  border: 0;
-  outline: 0;
-  font-size: 1rem;
-}
-
-.search input::placeholder,
-textarea::placeholder,
-.todo-add input::placeholder {
-  color: var(--muted);
-}
+.search-icon { margin-right: 16px; font-size: 2rem; }
+.search input { width: 100%; height: clamp(46px, 6vh, 62px); background: transparent; border: 0; outline: 0; font-size: 1rem; }
+.search input::placeholder, textarea::placeholder, .todo-add input::placeholder { color: var(--muted); }
 
 .quick-links {
   display: grid;
@@ -177,31 +147,9 @@ textarea::placeholder,
   transform: translateY(-2px);
 }
 
-.quick-icon {
-  margin-bottom: clamp(8px, 1.5vh, 16px);
-  font-size: clamp(1.55rem, 3vh, 2.2rem);
-  line-height: 1;
-}
-
-.add-link {
-  cursor: pointer;
-}
-
-.card {
-  z-index: 1;
-  border-radius: var(--radius-lg);
-}
-
-.memo-card {
-  position: absolute;
-  left: var(--safe-pad);
-  bottom: var(--safe-pad);
-  width: clamp(260px, 24vw, 360px);
-  max-width: calc(100vw - (var(--safe-pad) * 2));
-  max-height: min(42vh, 410px);
-  overflow: hidden;
-  padding: clamp(18px, 2vw, 26px);
-}
+.quick-icon { margin-bottom: clamp(8px, 1.5vh, 16px); font-size: clamp(1.55rem, 3vh, 2.2rem); line-height: 1; }
+.add-link { cursor: pointer; }
+.card { z-index: 1; border-radius: var(--radius-lg); }
 
 .card-header {
   display: flex;
@@ -211,132 +159,56 @@ textarea::placeholder,
   color: var(--muted);
 }
 
-.card-header h2 {
-  margin: 0;
-  color: var(--text);
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.42em;
-}
-
-.todo-list {
-  display: grid;
-  gap: clamp(8px, 1.4vh, 14px);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  font-size: 0.92rem;
-}
-
-.todo-item input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--text);
-}
-
-.todo-item span {
-  flex: 1;
-}
-
-.todo-item.done span {
-  color: var(--muted);
-  text-decoration: line-through;
-}
-
-.todo-remove {
-  border: 0;
-  background: transparent;
-  color: var(--muted-dark);
-  cursor: pointer;
-}
-
-.todo-add {
-  display: flex;
-  gap: 8px;
-  margin: clamp(14px, 2vh, 24px) 0 clamp(10px, 1.7vh, 18px);
-  padding-top: clamp(12px, 1.8vh, 18px);
-  border-top: 1px solid var(--border);
-}
-
-.todo-add input,
-textarea {
-  width: 100%;
-  background: transparent;
-  border: 0;
-  outline: 0;
-}
-
-.todo-add button {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--card-soft);
-  cursor: pointer;
-  transition: background 180ms ease, color 180ms ease;
-}
-
-textarea {
-  resize: none;
-  min-height: clamp(58px, 9vh, 82px);
-  max-height: 12vh;
-  color: var(--muted);
-}
+.card-header h2 { margin: 0; color: var(--text); font-size: 1rem; font-weight: 400; letter-spacing: 0.42em; }
 
 .status-card {
   position: absolute;
   top: var(--safe-pad);
   right: var(--safe-pad);
-  width: clamp(250px, 22vw, 330px);
+  width: clamp(280px, 26vw, 390px);
   max-width: calc(100vw - (var(--safe-pad) * 2));
-  max-height: min(34vh, 290px);
+  max-height: min(46vh, 430px);
   overflow: hidden;
   padding: clamp(18px, 2vw, 28px);
 }
 
-.status-list {
-  display: grid;
-  gap: clamp(14px, 2vh, 24px);
-}
+.status-list { display: grid; gap: clamp(10px, 1.5vh, 16px); }
+.status-item { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 6px 14px; padding-bottom: clamp(8px, 1.1vh, 12px); border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+.status-item:last-child { padding-bottom: 0; border-bottom: 0; }
+.status-icon { grid-row: 1 / 4; font-size: 1.25rem; }
+.status-main { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.status-name { color: var(--text); font-size: 0.86rem; letter-spacing: 0.08em; }
+.status-value { color: var(--text); font-size: 0.92rem; text-align: right; }
+.status-detail { grid-column: 2 / 3; color: var(--muted); font-size: 0.76rem; line-height: 1.4; }
+.status-bar { grid-column: 2 / 3; height: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.08); border-radius: 999px; }
+.status-fill { display: block; height: 100%; background: var(--text); border-radius: inherit; transition: width 240ms ease; }
 
-.status-item {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: center;
-  gap: 14px;
-}
-
-.status-icon {
-  color: var(--text);
-  font-size: 1.35rem;
-}
-
-.status-name,
-.status-value {
-  font-size: 0.94rem;
-}
-
-.status-bar {
-  grid-column: 2 / 4;
-  height: 4px;
+.todo-card,
+.memo-card {
+  position: absolute;
+  bottom: var(--safe-pad);
+  width: clamp(260px, 24vw, 360px);
+  max-width: calc(50vw - (var(--safe-pad) * 1.5));
+  max-height: min(42vh, 410px);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  padding: clamp(18px, 2vw, 26px);
 }
 
-.status-fill {
-  display: block;
-  height: 100%;
-  background: var(--text);
-  border-radius: inherit;
-}
+.todo-card { left: var(--safe-pad); }
+.memo-card { left: calc(var(--safe-pad) + clamp(260px, 24vw, 360px) + clamp(14px, 2vw, 24px)); }
+
+.todo-list { display: grid; max-height: min(24vh, 220px); overflow: auto; gap: clamp(8px, 1.4vh, 14px); margin: 0; padding: 0; list-style: none; }
+.todo-item { display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 0.92rem; }
+.todo-empty { color: var(--muted); font-size: 0.86rem; }
+.todo-item input { width: 16px; height: 16px; accent-color: var(--text); }
+.todo-item span { flex: 1; }
+.todo-item.done span { color: var(--muted); text-decoration: line-through; }
+.todo-remove { border: 0; background: transparent; color: var(--muted-dark); cursor: pointer; }
+
+.todo-add { display: flex; gap: 8px; margin: clamp(14px, 2vh, 24px) 0 0; padding-top: clamp(12px, 1.8vh, 18px); border-top: 1px solid var(--border); }
+.todo-add input, textarea { width: 100%; background: transparent; border: 0; outline: 0; }
+.todo-add button { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 12px; background: var(--card-soft); cursor: pointer; transition: background 180ms ease, color 180ms ease; }
+textarea { resize: none; min-height: clamp(120px, 27vh, 270px); max-height: min(30vh, 300px); color: var(--muted); }
 
 .settings-button {
   position: fixed;
@@ -354,109 +226,36 @@ textarea {
 }
 
 @media (max-width: 1180px) {
-  .shell {
-    --safe-pad: clamp(14px, 2.5vw, 28px);
-  }
-
-  .center-panel {
-    width: min(680px, calc(100vw - (var(--safe-pad) * 2)));
-  }
-
-  .quick-links {
-    grid-template-columns: repeat(3, minmax(86px, 1fr));
-    width: min(520px, 100%);
-  }
-
-  .memo-card {
-    width: clamp(240px, 32vw, 320px);
-    max-height: 36vh;
-  }
-
-  .status-card {
-    width: clamp(240px, 30vw, 310px);
-    max-height: 30vh;
-  }
+  .shell { --safe-pad: clamp(14px, 2.5vw, 28px); }
+  .center-panel { width: min(680px, calc(100vw - (var(--safe-pad) * 2))); }
+  .quick-links { grid-template-columns: repeat(3, minmax(86px, 1fr)); width: min(520px, 100%); }
+  .todo-card, .memo-card { width: clamp(240px, 31vw, 320px); max-height: 36vh; }
+  .memo-card { left: calc(var(--safe-pad) + clamp(240px, 31vw, 320px) + 14px); }
+  .status-card { width: clamp(270px, 32vw, 360px); max-height: 42vh; }
 }
 
 @media (max-width: 720px), (max-height: 760px) {
-  .shell {
-    --safe-pad: 14px;
-  }
-
-  .clock {
-    font-size: clamp(3rem, min(15vw, 15vh), 6.5rem);
-  }
-
-  .search {
-    margin-top: clamp(16px, 3vh, 28px);
-  }
-
-  .quick-links {
-    grid-template-columns: repeat(3, minmax(68px, 1fr));
-    width: min(420px, 100%);
-    margin-top: clamp(14px, 3vh, 24px);
-  }
-
-  .quick-link {
-    min-height: clamp(66px, 10vh, 86px);
-    font-size: 0.82rem;
-  }
-
-  .memo-card,
-  .status-card {
-    padding: 14px;
-  }
-
-  .memo-card {
-    width: min(270px, calc(50vw - 20px));
-    max-height: 30vh;
-  }
-
-  .status-card {
-    width: min(270px, calc(50vw - 20px));
-    max-height: 26vh;
-  }
-
-  .card-header,
-  .todo-add,
-  .status-list {
-    gap: 10px;
-  }
+  .shell { --safe-pad: 14px; }
+  .clock { font-size: clamp(3rem, min(15vw, 15vh), 6.5rem); }
+  .search { margin-top: clamp(16px, 3vh, 28px); }
+  .quick-links { grid-template-columns: repeat(3, minmax(68px, 1fr)); width: min(420px, 100%); margin-top: clamp(14px, 3vh, 24px); }
+  .quick-link { min-height: clamp(66px, 10vh, 86px); font-size: 0.82rem; }
+  .todo-card, .memo-card, .status-card { padding: 14px; }
+  .todo-card, .memo-card { width: min(250px, calc(50vw - 20px)); max-height: 30vh; }
+  .memo-card { left: calc(var(--safe-pad) + min(250px, calc(50vw - 20px)) + 12px); }
+  .status-card { width: min(300px, calc(50vw - 20px)); max-height: 36vh; }
+  .card-header, .todo-add, .status-list { gap: 10px; }
 }
 
 @media (max-width: 520px), (max-height: 620px) {
-  .date {
-    font-size: 0.9rem;
-  }
-
-  .search {
-    padding: 0 16px;
-  }
-
-  .search-icon {
-    margin-right: 10px;
-    font-size: 1.45rem;
-  }
-
-  .quick-links {
-    grid-template-columns: repeat(2, minmax(72px, 1fr));
-    width: min(300px, 100%);
-  }
-
-  .quick-link {
-    min-height: 58px;
-  }
-
-  .memo-card,
-  .status-card {
-    width: calc(50vw - 18px);
-    border-radius: 20px;
-    font-size: 0.78rem;
-  }
-
-  .todo-list li:nth-child(n + 3),
-  .status-item:nth-child(n + 4),
-  textarea {
-    display: none;
-  }
+  .date { font-size: 0.9rem; }
+  .search { padding: 0 16px; }
+  .search-icon { margin-right: 10px; font-size: 1.45rem; }
+  .quick-links { grid-template-columns: repeat(2, minmax(72px, 1fr)); width: min(300px, 100%); }
+  .quick-link { min-height: 58px; }
+  .todo-card, .memo-card, .status-card { position: static; width: 100%; max-width: min(320px, calc(100vw - 28px)); max-height: 24vh; border-radius: 20px; font-size: 0.78rem; justify-self: center; }
+  .shell { align-content: center; gap: 10px; }
+  .settings-button { display: none; }
+  .todo-list li:nth-child(n + 4), .status-item:nth-child(n + 5) { display: none; }
+  textarea { min-height: 70px; max-height: 12vh; }
 }
