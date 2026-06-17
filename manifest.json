@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Mono Tab",
+  "version": "1.0.0",
+  "description": "A monochrome minimal new tab page for Brave / Chromium.",
+  "permissions": [],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  }
+}
