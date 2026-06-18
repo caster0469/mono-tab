@@ -7,84 +7,38 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="background-grid" aria-hidden="true"></div>
-    <div class="background-waves" aria-hidden="true"></div>
+    <div class="background" aria-hidden="true"></div>
 
-    <main class="shell" aria-label="Mono Tab home">
-      <section class="center-panel" aria-label="時計と検索">
-        <div class="clock" id="clock">00:00</div>
-        <div class="date" id="date">----</div>
+    <main class="wrapper" aria-label="Mono Tab">
+      <section class="home" aria-label="時計、検索、クイックリンク">
+        <time class="clock" id="clock" datetime="00:00">00:00</time>
+        <div class="date" id="date">----年--月--日</div>
 
         <form class="search" id="searchForm" role="search">
-          <span class="search-icon" aria-hidden="true">⌕</span>
+          <span class="search-mark" aria-hidden="true">/</span>
           <input
             id="searchInput"
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="検索するか、URL を入力"
-            aria-label="検索するか、URL を入力"
+            placeholder="検索 or URL"
+            aria-label="検索 or URL"
+            autofocus
           />
         </form>
 
-        <!-- Quick links are intentionally plain HTML so you can edit them easily. -->
         <nav class="quick-links" aria-label="クイックリンク">
-          <a class="quick-link" href="https://www.youtube.com/">
-            <span class="quick-icon">▶</span>
-            <span>YouTube</span>
-          </a>
-          <a class="quick-link" href="https://chat.openai.com/">
-            <span class="quick-icon">◎</span>
-            <span>ChatGPT</span>
-          </a>
-          <a class="quick-link" href="https://github.com/">
-            <span class="quick-icon">◆</span>
-            <span>GitHub</span>
-          </a>
-          <a class="quick-link" href="https://mail.google.com/">
-            <span class="quick-icon">✉</span>
-            <span>Gmail</span>
-          </a>
-          <a class="quick-link" href="https://drive.google.com/">
-            <span class="quick-icon">▲</span>
-            <span>Drive</span>
-          </a>
-          <button class="quick-link add-link" type="button" aria-label="リンク追加（未実装）">
-            <span class="quick-icon">＋</span>
-            <span>追加</span>
-          </button>
+          <a class="quick-link" href="https://www.youtube.com/">YouTube</a>
+          <a class="quick-link" href="https://chat.openai.com/">ChatGPT</a>
+          <a class="quick-link" href="https://github.com/">GitHub</a>
+          <a class="quick-link" href="https://mail.google.com/">Gmail</a>
+          <a class="quick-link" href="https://drive.google.com/">Drive</a>
         </nav>
       </section>
 
-      <aside class="card status-card" aria-label="ブラウザステータス">
-        <div class="card-header">
-          <h2>STATUS</h2>
-          <span aria-hidden="true">◌</span>
-        </div>
-        <div id="statusList" class="status-list"></div>
-      </aside>
-
-      <aside class="card todo-card" aria-label="Todo">
-        <div class="card-header">
-          <h2>TODO</h2>
-          <span id="todoCount" aria-hidden="true">0</span>
-        </div>
-        <ul class="todo-list" id="todoList"></ul>
-        <form class="todo-add" id="todoForm">
-          <input id="todoInput" type="text" placeholder="Todo を追加..." aria-label="Todo を追加" />
-          <button type="submit" aria-label="Todo を追加">＋</button>
-        </form>
-      </aside>
-
-      <aside class="card memo-card" aria-label="メモ">
-        <div class="card-header">
-          <h2>MEMO</h2>
-          <span aria-hidden="true">⌖</span>
-        </div>
-        <textarea id="memoText" rows="8" placeholder="メモを書く" aria-label="自由入力メモ"></textarea>
-      </aside>
-
-      <button class="settings-button" type="button" aria-label="設定（未実装）">⚙</button>
+      <button class="settings-button" type="button" aria-label="設定（未実装）">
+        <span aria-hidden="true">⚙</span>
+      </button>
     </main>
 
     <script src="script.js"></script>
