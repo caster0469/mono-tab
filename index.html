@@ -7,39 +7,69 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="background" aria-hidden="true"></div>
+    <div class="background" id="background" aria-hidden="true"></div>
 
-    <main class="wrapper" aria-label="Mono Tab">
+    <main class="wrapper" id="wrapper" aria-label="Mono Tab">
       <section class="home" aria-label="時計、検索、クイックリンク">
         <time class="clock" id="clock" datetime="00:00">00:00</time>
         <div class="date" id="date">----年--月--日</div>
 
         <form class="search" id="searchForm" role="search">
           <span class="search-mark" aria-hidden="true">/</span>
-          <input
-            id="searchInput"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="検索 or URL"
-            aria-label="検索 or URL"
-            autofocus
-          />
+          <input id="searchInput" type="text" autocomplete="off" spellcheck="false" placeholder="検索 or URL" aria-label="検索 or URL" />
         </form>
 
-        <nav class="quick-links" aria-label="クイックリンク">
-          <a class="quick-link" href="https://www.youtube.com/">YouTube</a>
-          <a class="quick-link" href="https://chat.openai.com/">ChatGPT</a>
-          <a class="quick-link" href="https://github.com/">GitHub</a>
-          <a class="quick-link" href="https://mail.google.com/">Gmail</a>
-          <a class="quick-link" href="https://drive.google.com/">Drive</a>
-        </nav>
+        <nav class="quick-links" id="quickLinks" aria-label="クイックリンク"></nav>
       </section>
 
-      <button class="settings-button" type="button" aria-label="設定（未実装）">
+      <button class="settings-button" id="settingsButton" type="button" aria-label="設定を開く" aria-expanded="false" aria-controls="settingsPanel">
         <span aria-hidden="true">⚙</span>
       </button>
     </main>
+
+    <aside class="settings-panel" id="settingsPanel" aria-label="設定パネル" aria-hidden="true">
+      <div class="settings-header">
+        <div>
+          <p class="eyebrow">Mono Tab</p>
+          <h2>Customize</h2>
+        </div>
+        <button class="close-button" id="closeSettings" type="button" aria-label="設定を閉じる">×</button>
+      </div>
+
+      <div class="settings-content">
+        <section class="settings-section">
+          <h3>Clock</h3>
+          <label>Font<select id="clockFont"><option value="mono">Mono</option><option value="sans">Sans</option><option value="serif">Serif</option><option value="thin">Thin</option><option value="digital">Digital</option></select></label>
+          <label>Size<select id="clockSize"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+          <label>Time format<select id="timeFormat"><option value="24h">24時間表示</option><option value="12h">12時間表示</option></select></label>
+          <label class="toggle"><input id="showSeconds" type="checkbox" /> 秒を表示する</label>
+        </section>
+
+        <section class="settings-section">
+          <h3>Date</h3>
+          <label>Style<select id="dateStyle"><option value="full">Full</option><option value="simple">Simple</option><option value="dot">Dot</option><option value="slash">Slash</option><option value="hidden">Hidden</option></select></label>
+          <label class="toggle"><input id="showWeekday" type="checkbox" /> 曜日を表示する</label>
+        </section>
+
+        <section class="settings-section">
+          <h3>Search</h3>
+          <label class="toggle"><input id="showSearch" type="checkbox" /> 検索バーを表示する</label>
+          <label>Engine<select id="searchEngine"><option value="google">Google</option><option value="brave">Brave Search</option><option value="duckduckgo">DuckDuckGo</option><option value="bing">Bing</option></select></label>
+        </section>
+
+        <section class="settings-section">
+          <h3>Quick Links</h3>
+          <div id="linkSettings" class="link-settings"></div>
+        </section>
+
+        <section class="settings-section">
+          <h3>Look</h3>
+          <label>Background<select id="backgroundSelect"><option value="pure-black">Pure Black</option><option value="soft-glow">Soft Glow</option><option value="dot-grid">Dot Grid</option><option value="noise">Noise</option><option value="diagonal-lines">Diagonal Lines</option></select></label>
+          <label>Layout<select id="layout"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></label>
+          <label>Contrast<select id="contrast"><option value="high-contrast">High Contrast</option><option value="soft-gray">Soft Gray</option><option value="dim">Dim</option></select></label>
+        </section>
+      </div>
+    </aside>
 
     <script src="script.js"></script>
   </body>
