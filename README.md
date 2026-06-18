@@ -1,9 +1,24 @@
 # Mono Tab
 
-Brave / Chromium の新しいタブページを、モノクロでミニマルなローカルホーム画面に置き換える Manifest V3 拡張機能です。
+Mono Tab は Brave / Chromium 用の、超シンプルなモノクロ新規タブ拡張です。
+毎回開いても邪魔にならないように、表示する情報を時計・日付・検索・クイックリンクだけに絞っています。
 外部ライブラリは使わず、すべてローカルファイルだけで動作します。
 
-## Brave で読み込む手順
+## 機能
+
+- 大きな時計
+- 日本語の日付
+- 検索バー
+  - Enter で検索します。
+  - URL のような入力はその URL へ移動します。
+  - それ以外は Google 検索を開きます。
+- クイックリンク
+- 薄いドット / グリッド / 光のにじみ背景
+- 右下の小さな設定アイコン風ボタン
+  - 現時点では見た目だけです。
+  - 将来的に設定画面を追加しやすいよう、独立したボタンとして置いています。
+
+## Brave / Chromium で読み込む手順
 
 1. Brave のアドレスバーで `brave://extensions` を開く
 2. 右上の「デベロッパーモード」を ON にする
@@ -11,80 +26,36 @@ Brave / Chromium の新しいタブページを、モノクロでミニマルな
 4. このフォルダを選択する
 5. 新しいタブを開いて表示を確認する
 
-## 画面構成
+Chromium 系ブラウザでも、同様に拡張機能ページから「パッケージ化されていない拡張機能」として読み込めます。
 
-- 中央: 大きな時計、日付、検索バー、クイックリンク
-- 右上: ブラウザで取得できる実データを使った Status カード
-- 左下: TODO カード
-- TODO の隣: MEMO カード
+## クイックリンクを変更する場所
 
-小さい画面ではカードサイズと配置を調整し、新規タブページとしてスクロールバーが出にくいレイアウトにしています。
+`index.html` の `<nav class="quick-links">` 内にあるリンクを書き換えてください。
+初期値は次の 5 つです。
 
-## Status カードについて
+- YouTube: `https://www.youtube.com/`
+- ChatGPT: `https://chat.openai.com/`
+- GitHub: `https://github.com/`
+- Gmail: `https://mail.google.com/`
+- Drive: `https://drive.google.com/`
 
-通常のブラウザ拡張では、OS の本物の CPU 使用率、OS 全体の RAM 使用率、SSD 全体の使用量、Wi-Fi の詳細状態を直接取得することはできません。
-そのため Mono Tab では、見た目だけの CPU / RAM / SSD ダミー値は表示せず、ブラウザから取得できる情報だけを動的に表示します。
-
-表示する項目は次のとおりです。
-
-- Battery: `navigator.getBattery()` が使える場合に、バッテリー残量と充電状態を表示します。使えない場合は `Unavailable` と表示します。
-- Network: `navigator.onLine` で Online / Offline を表示します。`navigator.connection` が使える場合は `effectiveType`、`downlink`、`rtt` も表示し、取得できない情報は `Limited` と表示します。
-- JS Memory: `performance.memory` が使える場合に JavaScript heap の使用量を表示します。これは OS 全体の RAM 使用率ではありません。使えない場合は `Browser limited` と表示します。
-- Browser Storage: `navigator.storage.estimate()` を使って、このブラウザ origin のストレージ使用量と推定残量を表示します。これは SSD 全体の容量ではありません。
-- Session: ページを開いてからの経過時間を `00:00:00` 形式で表示します。
-
-ブラウザや拡張機能の実行環境によって一部 API が無効な場合があります。その場合もページ全体が壊れないようにフォールバック表示を行います。
-
-## TODO の使い方
-
-TODO は MEMO とは別の独立したカードです。
-
-- 入力欄に TODO を書いて Enter を押すと追加できます。
-- チェックボックスで完了 / 未完了を切り替えられます。
-- `×` ボタンで削除できます。
-- 完了済みの TODO は薄い文字色と取り消し線で表示されます。
-
-TODO は `localStorage` の `mono-tab-todos` キーに保存されます。同じブラウザプロファイル内では、拡張機能を再読み込みしても保持されます。
-
-## MEMO の使い方
-
-MEMO は TODO とは別の独立したカードです。
-自由に入力できる textarea で、入力内容は自動保存されます。
-
-MEMO は `localStorage` の `mono-tab-memo` キーに保存されます。
-
-## 変更しやすい場所
-
-### クイックリンクを変更する
-
-`index.html` の `<nav class="quick-links">` 内にある `<a class="quick-link">` を編集してください。
-リンク名と URL をそのまま書き換えられます。
+例:
 
 ```html
-<a class="quick-link" href="https://github.com/">
-  <span class="quick-icon">◆</span>
-  <span>GitHub</span>
-</a>
+<a class="quick-link" href="https://github.com/">GitHub</a>
 ```
 
-「＋」ボタンは見た目だけ用意してあります。今後リンク追加機能を実装する場合は、同じ `quick-link` 構造を使うと追加しやすいです。
-
-### 初期状態の TODO / MEMO
-
-TODO と MEMO は空の状態から始まり、入力した内容が `localStorage` に保存されます。
-古いバージョンの保存キーが残っている場合は、読み込み時だけ互換的に参照します。
-
-### 色や余白を変更する
+## 色を変更する場所
 
 `style.css` の先頭にある `:root` の CSS 変数を編集してください。
 
 ```css
 :root {
-  --bg: #050505;
-  --text: #eeeeee;
-  --muted: #999999;
-  --card: rgba(18, 18, 18, 0.72);
+  --background: #050505;
+  --main-text: #eeeeee;
+  --sub-text: #999999;
   --border: #2a2a2a;
+  --card-background: rgba(18, 18, 18, 0.72);
 }
 ```
 
@@ -92,5 +63,17 @@ TODO と MEMO は空の状態から始まり、入力した内容が `localStora
 
 - `manifest.json`: Manifest V3 の拡張機能設定
 - `index.html`: 新しいタブとして表示される画面
-- `style.css`: モノクロ / ガラス UI の見た目
-- `script.js`: 時計、検索、TODO、MEMO、ステータス表示の処理
+- `style.css`: モノクロの見た目とレスポンシブレイアウト
+- `script.js`: 時計、日付、検索処理
+- `README.md`: 説明と編集方法
+
+## 削除した機能
+
+今回のシンプル化で、以下の機能と関連コードを削除しました。
+
+- CPU / RAM / SSD / Wi-Fi などのステータス表示
+- Battery / Network / Storage / Session 表示
+- TODO カード、チェックリスト、追加フォーム
+- MEMO カード、textarea、自動保存処理
+- TODO / MEMO 用の `localStorage` 保存処理
+- 使われなくなった JavaScript 関数と CSS
