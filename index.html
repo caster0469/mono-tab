@@ -23,50 +23,117 @@
 
             <nav class="quick-links" id="quickLinks" aria-label="クイックリンク"></nav>
           </div>
-          <button class="page-jump page-jump-down" id="goCalendar" type="button" aria-label="Calendar と Todo のページへ移動">⌄</button>
+          <button class="page-jump page-jump-down" id="goCalendar" type="button" aria-label="Calendar と Widget Stack のページへ移動">⌄</button>
           <div class="page-indicator" role="button" tabindex="0" id="homeIndicator" aria-label="2ページ目へ移動">1 / 2</div>
         </section>
 
-        <section class="page dashboard-page" aria-label="Calendar and Todo">
-          <button class="return-home" id="returnHome" type="button">↑ 上にスクロールしてホームに戻る</button>
+        <section class="page dashboard-page" aria-label="Calendar and Widget Stack">
+          <button class="return-home" id="returnHome" type="button">Homeに戻る</button>
 
           <div class="dashboard-layout">
             <section class="dashboard-column calendar-column" aria-labelledby="calendarTitle">
               <div class="panel-title-row">
                 <div>
-                  <p class="eyebrow">Page 2</p>
+                  <p class="eyebrow">Local Calendar</p>
                   <h1 id="calendarTitle">Calendar</h1>
                 </div>
                 <time class="panel-date" id="panelDate"></time>
               </div>
-              <div class="calendar-card glass-card" id="calendarMount" aria-live="polite"></div>
+              <div class="calendar-card glass-card" aria-live="polite">
+                <div class="calendar-toolbar">
+                  <button id="prevMonth" type="button" aria-label="前月">‹</button>
+                  <div>
+                    <h2 id="calendarMonthLabel">----年--月</h2>
+                    <p>月曜始まり / 完全ローカル</p>
+                  </div>
+                  <button id="nextMonth" type="button" aria-label="次月">›</button>
+                  <button class="today-button" id="todayButton" type="button">今日</button>
+                </div>
+                <div class="calendar-weekdays" aria-hidden="true">
+                  <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><span>日</span>
+                </div>
+                <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="月間カレンダー"></div>
+                <section class="selected-events" aria-labelledby="selectedDateTitle">
+                  <div class="selected-events-header">
+                    <div>
+                      <p class="eyebrow">Schedule</p>
+                      <h2 id="selectedDateTitle">選択日の予定</h2>
+                    </div>
+                    <button class="secondary-button" id="showEventForm" type="button">予定を追加</button>
+                  </div>
+                  <form class="event-form hidden" id="eventForm">
+                    <input id="eventTitle" type="text" placeholder="タイトル" autocomplete="off" required />
+                    <input id="eventTime" type="time" />
+                    <textarea id="eventNote" placeholder="メモ"></textarea>
+                    <div class="form-actions">
+                      <button class="secondary-button" type="button" id="cancelEvent">Cancel</button>
+                      <button class="primary-button" type="submit">Save</button>
+                    </div>
+                  </form>
+                  <ul class="event-list" id="eventList"></ul>
+                </section>
+              </div>
             </section>
 
-            <section class="dashboard-column side-column" aria-label="Todo and widget stack">
-              <article class="todo-card glass-card" aria-labelledby="todoTitle">
-                <div class="panel-title-row compact">
+            <section class="dashboard-column widget-column" aria-labelledby="widgetStackTitle">
+              <article class="widget-stack glass-card">
+                <header class="widget-stack-header">
                   <div>
-                    <p class="eyebrow">Checklist</p>
-                    <h2 id="todoTitle">Todo</h2>
+                    <p class="eyebrow">Widgets</p>
+                    <h2 id="widgetStackTitle">Widget Stack</h2>
+                    <p>ウィジェットを切り替えて使う</p>
                   </div>
-                  <span class="todo-count" id="todoCount">0</span>
-                </div>
-                <form class="todo-form" id="todoForm">
-                  <input id="todoInput" type="text" autocomplete="off" placeholder="Add task and press Enter" aria-label="TODOを追加" />
-                </form>
-                <ul class="todo-list" id="todoList" aria-label="TODOリスト"></ul>
-              </article>
+                  <div class="widget-meta">
+                    <span id="widgetPosition">1 / 3</span>
+                    <div class="widget-controls">
+                      <button id="prevWidget" type="button" aria-label="前のウィジェット">‹</button>
+                      <button id="nextWidget" type="button" aria-label="次のウィジェット">›</button>
+                    </div>
+                  </div>
+                </header>
 
-              <article class="widget-stack glass-card" aria-label="Widget Stack Preview">
-                <div>
-                  <p class="eyebrow">Preview</p>
-                  <h2>Stack Widgets</h2>
-                  <p>Future widgets will appear here</p>
+                <div class="widget-viewport">
+                  <section class="widget-panel active" data-widget="todo" aria-labelledby="todoTitle">
+                    <div class="widget-title-row">
+                      <h3 id="todoTitle">Todo</h3>
+                      <span class="todo-count" id="todoCount">完了 0 / 全部 0</span>
+                    </div>
+                    <form class="todo-form" id="todoForm">
+                      <input id="todoInput" type="text" autocomplete="off" placeholder="新しいタスクを入力..." aria-label="TODOを追加" />
+                    </form>
+                    <ul class="todo-list" id="todoList" aria-label="TODOリスト"></ul>
+                    <button class="secondary-button clear-completed" id="clearCompletedTodos" type="button">完了済みをクリア</button>
+                  </section>
+
+                  <section class="widget-panel" data-widget="memo" aria-labelledby="memoTitle">
+                    <div class="widget-title-row">
+                      <h3 id="memoTitle">Memo</h3>
+                      <span class="memo-count" id="memoCount">0 chars</span>
+                    </div>
+                    <textarea class="memo-textarea" id="memoTextarea" placeholder="メモを書く..." spellcheck="false"></textarea>
+                  </section>
+
+                  <section class="widget-panel" data-widget="pomodoro" aria-labelledby="pomodoroTitle">
+                    <div class="widget-title-row">
+                      <h3 id="pomodoroTitle">Pomodoro</h3>
+                      <span>Focus 25m / Break 5m</span>
+                    </div>
+                    <div class="pomodoro-mode" id="pomodoroModeLabel">Focus time</div>
+                    <div class="pomodoro-time" id="pomodoroTime">25:00</div>
+                    <div class="pomodoro-switches">
+                      <button id="focusMode" type="button">Focus</button>
+                      <button id="breakMode" type="button">Break</button>
+                    </div>
+                    <div class="pomodoro-actions">
+                      <button class="primary-button" id="startPomodoro" type="button">Start</button>
+                      <button class="secondary-button" id="pausePomodoro" type="button">Pause</button>
+                      <button class="secondary-button" id="resetPomodoro" type="button">Reset</button>
+                    </div>
+                    <p class="pomodoro-message" id="pomodoroMessage"></p>
+                  </section>
                 </div>
-                <div class="widget-arrows" aria-hidden="true">
-                  <span>‹</span>
-                  <span>›</span>
-                </div>
+
+                <div class="widget-dots" id="widgetDots" aria-label="Widget pages"></div>
               </article>
             </section>
           </div>
@@ -82,53 +149,13 @@
     </main>
 
     <aside class="settings-panel" id="settingsPanel" aria-label="設定パネル" aria-hidden="true">
-      <div class="settings-header">
-        <div>
-          <p class="eyebrow">Mono Tab</p>
-          <h2>Customize</h2>
-        </div>
-        <button class="close-button" id="closeSettings" type="button" aria-label="設定を閉じる">×</button>
-      </div>
-
+      <div class="settings-header"><div><p class="eyebrow">Mono Tab</p><h2>Customize</h2></div><button class="close-button" id="closeSettings" type="button" aria-label="設定を閉じる">×</button></div>
       <div class="settings-content">
-        <section class="settings-section">
-          <h3>Clock</h3>
-          <label>Font<select id="clockFont"><option value="mono">Mono</option><option value="sans">Sans</option><option value="serif">Serif</option><option value="thin">Thin</option><option value="digital">Digital</option></select></label>
-          <label>Size<select id="clockSize"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
-          <label>Time format<select id="timeFormat"><option value="24h">24時間表示</option><option value="12h">12時間表示</option></select></label>
-          <label class="toggle"><input id="showSeconds" type="checkbox" /> 秒を表示する</label>
-        </section>
-
-        <section class="settings-section">
-          <h3>Date</h3>
-          <label>Style<select id="dateStyle"><option value="full">Full</option><option value="simple">Simple</option><option value="dot">Dot</option><option value="slash">Slash</option><option value="hidden">Hidden</option></select></label>
-          <label class="toggle"><input id="showWeekday" type="checkbox" /> 曜日を表示する</label>
-        </section>
-
-        <section class="settings-section">
-          <h3>Search</h3>
-          <label class="toggle"><input id="showSearch" type="checkbox" /> 検索バーを表示する</label>
-          <label>Engine<select id="searchEngine"><option value="google">Google</option><option value="brave">Brave Search</option><option value="duckduckgo">DuckDuckGo</option><option value="bing">Bing</option></select></label>
-        </section>
-
-        <section class="settings-section">
-          <h3>Calendar</h3>
-          <label>Google Calendar Embed URL<input id="calendarEmbedUrl" type="text" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
-          <p class="settings-help">Google Calendar の設定 → カレンダーの統合 → 埋め込みコード、またはiframeのsrc URLを貼り付けてください。iframeタグ全体またはsrc URLを貼り付け可能です。</p>
-          <button class="secondary-button" id="clearCalendarUrl" type="button">Clear calendar URL</button>
-        </section>
-
-        <section class="settings-section">
-          <h3>Quick Links</h3>
-          <div id="linkSettings" class="link-settings"></div>
-        </section>
-
-        <section class="settings-section">
-          <h3>Look</h3>
-          <label>Background<select id="backgroundSelect"><option value="pure-black">Pure Black</option><option value="soft-glow">Soft Glow</option><option value="dot-grid">Dot Grid</option><option value="noise">Noise</option><option value="diagonal-lines">Diagonal Lines</option></select></label>
-          <label>Layout<select id="layout"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></label>
-          <label>Contrast<select id="contrast"><option value="high-contrast">High Contrast</option><option value="soft-gray">Soft Gray</option><option value="dim">Dim</option></select></label>
-        </section>
+        <section class="settings-section"><h3>Clock</h3><label>Font<select id="clockFont"><option value="mono">Mono</option><option value="sans">Sans</option><option value="serif">Serif</option><option value="thin">Thin</option><option value="digital">Digital</option></select></label><label>Size<select id="clockSize"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label><label>Time format<select id="timeFormat"><option value="24h">24時間表示</option><option value="12h">12時間表示</option></select></label><label class="toggle"><input id="showSeconds" type="checkbox" /> 秒を表示する</label></section>
+        <section class="settings-section"><h3>Date</h3><label>Style<select id="dateStyle"><option value="full">Full</option><option value="simple">Simple</option><option value="dot">Dot</option><option value="slash">Slash</option><option value="hidden">Hidden</option></select></label><label class="toggle"><input id="showWeekday" type="checkbox" /> 曜日を表示する</label></section>
+        <section class="settings-section"><h3>Search</h3><label class="toggle"><input id="showSearch" type="checkbox" /> 検索バーを表示する</label><label>Engine<select id="searchEngine"><option value="google">Google</option><option value="brave">Brave Search</option><option value="duckduckgo">DuckDuckGo</option><option value="bing">Bing</option></select></label></section>
+        <section class="settings-section"><h3>Quick Links</h3><div id="linkSettings" class="link-settings"></div></section>
+        <section class="settings-section"><h3>Look</h3><label>Background<select id="backgroundSelect"><option value="pure-black">Pure Black</option><option value="soft-glow">Soft Glow</option><option value="dot-grid">Dot Grid</option><option value="noise">Noise</option><option value="diagonal-lines">Diagonal Lines</option></select></label><label>Layout<select id="layout"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></label><label>Contrast<select id="contrast"><option value="high-contrast">High Contrast</option><option value="soft-gray">Soft Gray</option><option value="dim">Dim</option></select></label></section>
       </div>
     </aside>
 
