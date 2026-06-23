@@ -65,6 +65,7 @@ label { display: grid; gap: 7px; color: var(--sub-text); font-size: .84rem; }
 .toggle { display: flex; align-items: center; gap: 10px; }
 select, input[type="text"], input[type="url"], input[type="time"], textarea { width: 100%; min-height: 40px; padding: 0 12px; background: rgba(255,255,255,.045); border: 1px solid var(--border); border-radius: 12px; outline: none; }
 textarea { padding: 12px; resize: none; }
+.event-form textarea { min-height: clamp(64px, 9vh, 110px); }
 .link-slot { display: grid; grid-template-columns: 82px 1fr; gap: 8px 10px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 16px; }
 .link-slot input { grid-column: 1 / -1; }
 
@@ -78,24 +79,31 @@ textarea { padding: 12px; resize: none; }
 .glass-card { background: var(--card-background); border: 1px solid var(--border); border-radius: clamp(20px, 2.4vw, 32px); box-shadow: 0 22px 90px var(--shadow), inset 0 1px 0 rgba(255,255,255,.045); backdrop-filter: blur(18px); }
 .panel-date, .todo-count, .memo-count, .widget-title-row span { color: var(--sub-text); font-size: .78rem; }
 
-.calendar-card { flex: 1; min-height: 0; padding: clamp(16px, 2vw, 24px); display: grid; grid-template-rows: auto auto minmax(210px, 1fr) minmax(150px, .75fr); gap: clamp(10px, 1.5vh, 16px); overflow: hidden; }
-.calendar-toolbar { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; }
-.calendar-toolbar h2 { margin: 0; }
-.calendar-toolbar p, .widget-stack-header p { margin: 4px 0 0; color: var(--sub-text); font-size: .8rem; }
+.calendar-card { flex: 1; min-height: 0; padding: clamp(14px, 1.8vw, 24px); }
+.calendar-panel { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.calendar-header { flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; padding-bottom: clamp(10px, 1.4vh, 16px); }
+.calendar-header .panel-title-row { min-width: 0; }
+.calendar-header p, .widget-stack-header p { margin: 4px 0 0; color: var(--sub-text); font-size: .8rem; }
+.calendar-toolbar { display: flex; align-items: center; gap: 10px; }
 .today-button { border-radius: 999px !important; padding: 0 14px; }
+.calendar-scroll-area { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: clamp(8px, 1.2vh, 14px); overflow-y: auto; overflow-x: hidden; padding-right: 3px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
 .calendar-weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.calendar-weekdays { flex: 0 0 auto; }
 .calendar-weekdays span { color: var(--sub-text); text-align: center; font-size: .76rem; }
-.calendar-day { position: relative; display: grid; place-items: center; min-height: 0; background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; color: var(--main-text); }
+.calendar-grid { flex: 0 0 auto; max-height: clamp(260px, 48vh, 520px); }
+.calendar-day { position: relative; display: grid; place-items: center; min-height: clamp(38px, 6vh, 72px); background: rgba(0,0,0,.18); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; color: var(--main-text); }
 .calendar-day.muted { color: rgba(153,153,153,.38); }
 .calendar-day.today span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #eeeeee; color: #050505; }
 .calendar-day.selected { border-color: rgba(255,255,255,.66); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
 .calendar-day i { position: absolute; bottom: 7px; width: 4px; height: 4px; border-radius: 50%; background: #eeeeee; }
 .selected-events { min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.selected-events-card { flex: 0 1 auto; max-height: clamp(150px, 28vh, 320px); padding: clamp(12px, 1.4vw, 16px); background: rgba(0,0,0,.12); border: 1px solid rgba(255,255,255,.06); border-radius: 18px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
 .event-form { display: grid; grid-template-columns: 1fr 130px; gap: 8px; }
 .event-form textarea, .event-form .form-actions { grid-column: 1 / -1; }
 .form-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .hidden { display: none !important; }
 .event-list, .todo-list { flex: 1; min-height: 0; margin: 0; padding: 0; list-style: none; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.selected-events-card .event-list { flex: 0 1 auto; }
 .event-item, .todo-item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.08); }
 .event-item time { color: var(--sub-text); font-size: .76rem; margin-right: 10px; }
 .event-item strong { font-weight: 400; }
@@ -130,12 +138,17 @@ textarea { padding: 12px; resize: none; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
 ::-webkit-scrollbar-track { background: transparent; }
+.calendar-scroll-area::-webkit-scrollbar,
+.selected-events-card::-webkit-scrollbar { width: 6px; }
+.calendar-scroll-area::-webkit-scrollbar-thumb,
+.selected-events-card::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 999px; }
 @media (max-width: 900px), (max-height: 760px) {
   .dashboard-page { padding: 14px; }
   .dashboard-layout { gap: 12px; padding-top: 36px; padding-bottom: 42px; }
   .calendar-card, .widget-stack { padding: 14px; border-radius: 20px; }
-  .calendar-card { grid-template-rows: auto auto minmax(170px, 1fr) minmax(120px, .7fr); }
-  .calendar-day { border-radius: 10px; font-size: .86rem; }
+  .calendar-header { gap: 10px; padding-bottom: 10px; }
+  .calendar-day { min-height: clamp(34px, 5.3vh, 58px); border-radius: 10px; font-size: .86rem; }
+  .selected-events-card { max-height: clamp(140px, 30vh, 260px); }
   .pomodoro-time { font-size: clamp(3rem, 7vw, 5rem); }
 }
 @media (max-width: 680px) { .home-page { padding: 22px; } .quick-links { flex-wrap: wrap; max-width: 420px; } .quick-link { min-width: 118px; min-height: 48px; } }
