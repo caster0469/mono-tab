@@ -10,17 +10,71 @@
     <div class="background" id="background" aria-hidden="true"></div>
 
     <main class="wrapper" id="wrapper" aria-label="Mono Tab">
-      <section class="home" aria-label="時計、検索、クイックリンク">
-        <time class="clock" id="clock" datetime="00:00">00:00</time>
-        <div class="date" id="date">----年--月--日</div>
+      <div class="pages" id="pages">
+        <section class="page home-page" aria-label="時計、検索、クイックリンク">
+          <div class="home" id="home">
+            <time class="clock" id="clock" datetime="00:00">00:00</time>
+            <div class="date" id="date">----年--月--日</div>
 
-        <form class="search" id="searchForm" role="search">
-          <span class="search-mark" aria-hidden="true">/</span>
-          <input id="searchInput" type="text" autocomplete="off" spellcheck="false" placeholder="検索 or URL" aria-label="検索 or URL" />
-        </form>
+            <form class="search" id="searchForm" role="search">
+              <span class="search-mark" aria-hidden="true">/</span>
+              <input id="searchInput" type="text" autocomplete="off" spellcheck="false" placeholder="検索 or URL" aria-label="検索 or URL" />
+            </form>
 
-        <nav class="quick-links" id="quickLinks" aria-label="クイックリンク"></nav>
-      </section>
+            <nav class="quick-links" id="quickLinks" aria-label="クイックリンク"></nav>
+          </div>
+          <button class="page-jump page-jump-down" id="goCalendar" type="button" aria-label="Calendar と Todo のページへ移動">⌄</button>
+          <div class="page-indicator" role="button" tabindex="0" id="homeIndicator" aria-label="2ページ目へ移動">1 / 2</div>
+        </section>
+
+        <section class="page dashboard-page" aria-label="Calendar and Todo">
+          <button class="return-home" id="returnHome" type="button">↑ 上にスクロールしてホームに戻る</button>
+
+          <div class="dashboard-layout">
+            <section class="dashboard-column calendar-column" aria-labelledby="calendarTitle">
+              <div class="panel-title-row">
+                <div>
+                  <p class="eyebrow">Page 2</p>
+                  <h1 id="calendarTitle">Calendar</h1>
+                </div>
+                <time class="panel-date" id="panelDate"></time>
+              </div>
+              <div class="calendar-card glass-card" id="calendarMount" aria-live="polite"></div>
+            </section>
+
+            <section class="dashboard-column side-column" aria-label="Todo and widget stack">
+              <article class="todo-card glass-card" aria-labelledby="todoTitle">
+                <div class="panel-title-row compact">
+                  <div>
+                    <p class="eyebrow">Checklist</p>
+                    <h2 id="todoTitle">Todo</h2>
+                  </div>
+                  <span class="todo-count" id="todoCount">0</span>
+                </div>
+                <form class="todo-form" id="todoForm">
+                  <input id="todoInput" type="text" autocomplete="off" placeholder="Add task and press Enter" aria-label="TODOを追加" />
+                </form>
+                <ul class="todo-list" id="todoList" aria-label="TODOリスト"></ul>
+              </article>
+
+              <article class="widget-stack glass-card" aria-label="Widget Stack Preview">
+                <div>
+                  <p class="eyebrow">Preview</p>
+                  <h2>Stack Widgets</h2>
+                  <p>Future widgets will appear here</p>
+                </div>
+                <div class="widget-arrows" aria-hidden="true">
+                  <span>‹</span>
+                  <span>›</span>
+                </div>
+              </article>
+            </section>
+          </div>
+
+          <button class="page-jump page-jump-up" id="goHome" type="button" aria-label="ホームに戻る">⌃</button>
+          <div class="page-indicator" role="button" tabindex="0" id="dashboardIndicator" aria-label="ホームに戻る">2 / 2</div>
+        </section>
+      </div>
 
       <button class="settings-button" id="settingsButton" type="button" aria-label="設定を開く" aria-expanded="false" aria-controls="settingsPanel">
         <span aria-hidden="true">⚙</span>
@@ -55,6 +109,13 @@
           <h3>Search</h3>
           <label class="toggle"><input id="showSearch" type="checkbox" /> 検索バーを表示する</label>
           <label>Engine<select id="searchEngine"><option value="google">Google</option><option value="brave">Brave Search</option><option value="duckduckgo">DuckDuckGo</option><option value="bing">Bing</option></select></label>
+        </section>
+
+        <section class="settings-section">
+          <h3>Calendar</h3>
+          <label>Google Calendar Embed URL<input id="calendarEmbedUrl" type="text" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
+          <p class="settings-help">Google Calendar の設定 → カレンダーの統合 → 埋め込みコード、またはiframeのsrc URLを貼り付けてください。iframeタグ全体またはsrc URLを貼り付け可能です。</p>
+          <button class="secondary-button" id="clearCalendarUrl" type="button">Clear calendar URL</button>
         </section>
 
         <section class="settings-section">
