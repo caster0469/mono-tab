@@ -43,8 +43,11 @@ const selectedDateTitle = $("#selectedDateTitle");
 const eventList = $("#eventList");
 const eventForm = $("#eventForm");
 const eventTitle = $("#eventTitle");
+const eventDate = $("#eventDate");
 const eventTime = $("#eventTime");
 const eventNote = $("#eventNote");
+const eventModalBackdrop = $("#eventModalBackdrop");
+const closeEventModalButton = $("#closeEventModal");
 const showEventForm = $("#showEventForm");
 const cancelEvent = $("#cancelEvent");
 const todoForm = $("#todoForm");
@@ -62,7 +65,7 @@ const pomodoroTime = $("#pomodoroTime");
 const pomodoroMessage = $("#pomodoroMessage");
 const settingsButton = $("#settingsButton");
 const settingsPanel = $("#settingsPanel");
-const closeSettings = $("#closeSettings");
+const closeSettingsButton = $("#closeSettings");
 const linkSettings = $("#linkSettings");
 
 const controls = {
@@ -74,6 +77,7 @@ const controls = {
 let settings = loadSettings();
 let currentPage = 1;
 let wheelLocked = false;
+const state = { isOverlayOpen: false, isSettingsOpen: false };
 let events = loadEvents();
 let todos = loadTodos();
 let memo = loadMemo();
@@ -104,7 +108,11 @@ function applySettings() {
 }
 function syncControls() { Object.entries(controls).forEach(([k, c]) => { c.type === "checkbox" ? c.checked = Boolean(settings[k]) : c.value = settings[k]; }); }
 function bindSettingsControls() { Object.entries(controls).forEach(([k, c]) => c.addEventListener("change", () => { settings[k] = c.type === "checkbox" ? c.checked : c.value; saveSettings(); applySettings(); renderClock(); })); }
-function toggleSettings(forceOpen) { const isOpen = typeof forceOpen === "boolean" ? forceOpen : !settingsPanel.classList.contains("open"); settingsPanel.classList.toggle("open", isOpen); settingsPanel.setAttribute("aria-hidden", String(!isOpen)); settingsButton.setAttribute("aria-expanded", String(isOpen)); }
+function setOverlayOpen(isOpen) { state.isOverlayOpen = Boolean(isOpen); document.body.classList.toggle("overlay-open", state.isOverlayOpen || state.isSettingsOpen); }
+function openSettings() { state.isSettingsOpen = true; settingsPanel.classList.add("open"); settingsPanel.setAttribute("aria-hidden", "false"); settingsButton.setAttribute("aria-expanded", "true"); setOverlayOpen(state.isOverlayOpen); }
+function closeSettings() { state.isSettingsOpen = false; settingsPanel.classList.remove("open"); settingsPanel.setAttribute("aria-hidden", "true"); settingsButton.setAttribute("aria-expanded", "false"); setOverlayOpen(state.isOverlayOpen); }
+function toggleSettings(forceOpen) { const isOpen = typeof forceOpen === "boolean" ? forceOpen : !state.isSettingsOpen; isOpen ? openSettings() : closeSettings(); }
+
 function buildLinkSettings() { linkSettings.textContent = ""; settings.links.forEach((link, index) => { const slot = document.createElement("div"); slot.className = "link-slot"; slot.innerHTML = `<strong>Slot ${index + 1}</strong>`; const name = document.createElement("input"); name.type = "text"; name.placeholder = "表示名"; name.value = link.name; name.addEventListener("input", () => updateLink(index, "name", name.value)); const url = document.createElement("input"); url.type = "url"; url.placeholder = "URL"; url.value = link.url; url.addEventListener("input", () => updateLink(index, "url", url.value)); slot.append(name, url); linkSettings.append(slot); }); }
 function updateLink(index, key, value) { settings.links[index][key] = value; saveSettings(); renderLinks(); }
 
@@ -124,12 +132,18 @@ function destinationFor(input) { const value = input.trim(); if (/^https?:\/\//i
 // Calendar
 function loadEvents() { const stored = readJson(EVENTS_KEY, []); return Array.isArray(stored) ? stored : []; }
 function saveEvents() { writeJson(EVENTS_KEY, events); }
-function getEventsForDate(dateString) { return events.filter((event) => event.date === dateString).sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99")); }
+function getEventsForDate(dateString) { return events.filter((event) => event.date === dateString).sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99") || (a.createdAt || 0) - (b.createdAt || 0)); }
 function hasEvents(dateString) { return getEventsForDate(dateString).length > 0; }
-function renderCalendar() { calendarGrid.textContent = ""; const year = visibleMonth.getFullYear(); const month = visibleMonth.getMonth(); calendarMonthLabel.textContent = `${year}年${month + 1}月`; const first = new Date(year, month, 1); const startOffset = (first.getDay() + 6) % 7; const start = new Date(year, month, 1 - startOffset); for (let i = 0; i < 42; i += 1) { const day = new Date(start); day.setDate(start.getDate() + i); const dateString = formatDate(day); const button = document.createElement("button"); button.type = "button"; button.className = "calendar-day"; if (day.getMonth() !== month) button.classList.add("muted"); if (dateString === formatDate(new Date())) button.classList.add("today"); if (dateString === selectedDate) button.classList.add("selected"); button.innerHTML = `<span>${day.getDate()}</span>${hasEvents(dateString) ? '<i aria-hidden="true"></i>' : ""}`; button.addEventListener("click", () => { selectedDate = dateString; renderCalendar(); renderSelectedDateEvents(); }); calendarGrid.append(button); } renderSelectedDateEvents(); }
-function renderSelectedDateEvents() { selectedDateTitle.textContent = formatJapaneseDate(selectedDate); eventList.textContent = ""; const list = getEventsForDate(selectedDate); if (!list.length) { const empty = document.createElement("li"); empty.className = "empty-state"; empty.textContent = "予定はありません"; eventList.append(empty); return; } list.forEach((event) => { const item = document.createElement("li"); item.className = "event-item"; item.innerHTML = `<div><time>${event.time || "--:--"}</time><strong></strong><p></p></div>`; item.querySelector("strong").textContent = event.title; item.querySelector("p").textContent = event.note || ""; const del = document.createElement("button"); del.type = "button"; del.textContent = "×"; del.setAttribute("aria-label", `${event.title} を削除`); del.addEventListener("click", () => deleteEvent(event.id)); item.append(del); eventList.append(item); }); }
-function addEvent() { const title = eventTitle.value.trim(); if (!title) return; events.push({ id: makeId("event"), title, date: selectedDate, time: eventTime.value, note: eventNote.value.trim(), createdAt: Date.now() }); saveEvents(); eventForm.reset(); eventForm.classList.add("hidden"); renderCalendar(); }
+function getVisibleEventLimit() { return window.matchMedia("(max-width: 1365px), (max-height: 760px)").matches ? 1 : 2; }
+function renderCalendar() { calendarGrid.textContent = ""; const year = visibleMonth.getFullYear(); const month = visibleMonth.getMonth(); calendarMonthLabel.textContent = `${year}年${month + 1}月`; renderMonthGrid(year, month); renderSelectedDateEvents(); }
+function renderMonthGrid(year = visibleMonth.getFullYear(), month = visibleMonth.getMonth()) { const first = new Date(year, month, 1); const startOffset = (first.getDay() + 6) % 7; const start = new Date(year, month, 1 - startOffset); for (let i = 0; i < 42; i += 1) { const day = new Date(start); day.setDate(start.getDate() + i); calendarGrid.append(renderCalendarDay(day, month)); } }
+function renderCalendarDay(day, visibleMonthIndex) { const dateString = formatDate(day); const dayEvents = getEventsForDate(dateString); const button = document.createElement("button"); button.type = "button"; button.className = "calendar-day"; button.setAttribute("role", "gridcell"); button.setAttribute("aria-label", `${formatJapaneseDate(dateString)}${dayEvents.length ? ` ${dayEvents.length}件の予定` : ""}`); if (day.getMonth() !== visibleMonthIndex) button.classList.add("muted"); if (dateString === formatDate(new Date())) button.classList.add("today"); if (dateString === selectedDate) button.classList.add("selected"); const number = document.createElement("span"); number.className = "calendar-day-number"; number.textContent = day.getDate(); const eventWrap = document.createElement("div"); eventWrap.className = "calendar-day-events"; const limit = getVisibleEventLimit(); dayEvents.slice(0, limit).forEach((event) => { const chip = document.createElement("span"); chip.className = "calendar-event-chip"; chip.textContent = `${event.time ? `${event.time} ` : ""}${event.title}`; eventWrap.append(chip); }); if (dayEvents.length > limit) { const more = document.createElement("span"); more.className = "calendar-more"; more.textContent = `+${dayEvents.length - limit} more`; eventWrap.append(more); } button.append(number, eventWrap); button.addEventListener("click", () => { selectedDate = dateString; renderCalendar(); }); return button; }
+function renderSelectedDateEvents() { selectedDateTitle.textContent = formatJapaneseDate(selectedDate); eventList.textContent = ""; const list = getEventsForDate(selectedDate); if (!list.length) { const empty = document.createElement("li"); empty.className = "empty-state"; empty.textContent = "予定はありません"; eventList.append(empty); return; } list.forEach((event) => { const item = document.createElement("li"); item.className = "event-item"; item.innerHTML = `<div><time>${event.time || "終日"}</time><strong></strong><p></p></div>`; item.querySelector("strong").textContent = event.title; item.querySelector("p").textContent = event.note || ""; const del = document.createElement("button"); del.type = "button"; del.textContent = "×"; del.setAttribute("aria-label", `${event.title} を削除`); del.addEventListener("click", () => deleteEvent(event.id)); item.append(del); eventList.append(item); }); }
+function addEvent(event) { events.push(event); saveEvents(); selectedDate = event.date; visibleMonth = new Date(`${event.date}T00:00:00`); visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1); renderCalendar(); }
 function deleteEvent(id) { events = events.filter((event) => event.id !== id); saveEvents(); renderCalendar(); }
+function openEventModal(date = selectedDate) { eventForm.reset(); eventDate.value = date; eventModalBackdrop.classList.remove("hidden"); eventModalBackdrop.setAttribute("aria-hidden", "false"); setOverlayOpen(true); requestAnimationFrame(() => eventTitle.focus()); }
+function closeEventModal() { eventModalBackdrop.classList.add("hidden"); eventModalBackdrop.setAttribute("aria-hidden", "true"); eventForm.reset(); setOverlayOpen(false); }
+function handleEventFormSubmit(event) { event.preventDefault(); const title = eventTitle.value.trim(); if (!title) return; addEvent({ id: makeId("event"), title, date: eventDate.value || selectedDate, time: eventTime.value, note: eventNote.value.trim(), createdAt: Date.now() }); closeEventModal(); }
 
 // Widget Stack
 function renderWidgetStack() { activeWidget = Math.max(0, Math.min(widgetPanels.length - 1, activeWidget)); widgetPanels.forEach((panel, index) => panel.classList.toggle("active", index === activeWidget)); widgetPosition.textContent = `${activeWidget + 1} / ${widgetPanels.length}`; widgetDots.textContent = ""; widgetPanels.forEach((_, index) => { const dot = document.createElement("button"); dot.type = "button"; dot.textContent = index === activeWidget ? "●" : "○"; dot.setAttribute("aria-label", `Widget ${index + 1}`); dot.addEventListener("click", () => setActiveWidget(index)); widgetDots.append(dot); }); localStorage.setItem(ACTIVE_WIDGET_KEY, String(activeWidget)); }
@@ -161,15 +175,17 @@ function switchPomodoroMode(mode) { const shouldResume = pomodoro.isRunning; pau
 function tickPomodoro() { if (!pomodoro.isRunning) return; pomodoro.remainingSeconds -= 1; if (pomodoro.remainingSeconds <= 0) switchPomodoroMode(pomodoro.mode === "focus" ? "break" : "focus"); savePomodoro(); renderPomodoro(); }
 
 searchForm.addEventListener("submit", (e) => { e.preventDefault(); const query = searchInput.value.trim(); if (query) window.location.href = destinationFor(query); });
-settingsButton.addEventListener("click", () => toggleSettings()); closeSettings.addEventListener("click", () => toggleSettings(false));
+settingsButton.addEventListener("click", () => toggleSettings()); closeSettingsButton.addEventListener("click", closeSettings);
 $("#goCalendar").addEventListener("click", () => goToPage(2)); $("#goHome").addEventListener("click", () => goToPage(1)); $("#returnHome").addEventListener("click", () => goToPage(1));
 $("#prevMonth").addEventListener("click", () => { visibleMonth.setMonth(visibleMonth.getMonth() - 1); renderCalendar(); }); $("#nextMonth").addEventListener("click", () => { visibleMonth.setMonth(visibleMonth.getMonth() + 1); renderCalendar(); }); $("#todayButton").addEventListener("click", () => { const now = new Date(); visibleMonth = new Date(now.getFullYear(), now.getMonth(), 1); selectedDate = formatDate(now); renderCalendar(); });
-showEventForm.addEventListener("click", () => { eventForm.classList.toggle("hidden"); eventTitle.focus(); }); cancelEvent.addEventListener("click", () => { eventForm.reset(); eventForm.classList.add("hidden"); }); eventForm.addEventListener("submit", (e) => { e.preventDefault(); addEvent(); });
+showEventForm.addEventListener("click", () => openEventModal(selectedDate)); cancelEvent.addEventListener("click", closeEventModal); closeEventModalButton.addEventListener("click", closeEventModal); eventModalBackdrop.addEventListener("click", (event) => { if (event.target === eventModalBackdrop) closeEventModal(); }); eventForm.addEventListener("submit", handleEventFormSubmit);
 todoForm.addEventListener("submit", (e) => { e.preventDefault(); addTodo(todoInput.value); todoInput.value = ""; }); clearCompletedTodos.addEventListener("click", clearCompleted);
 memoTextarea.addEventListener("input", saveMemo);
 $("#prevWidget").addEventListener("click", () => shiftWidget(-1)); $("#nextWidget").addEventListener("click", () => shiftWidget(1));
 $("#startPomodoro").addEventListener("click", startPomodoro); $("#pausePomodoro").addEventListener("click", pausePomodoro); $("#resetPomodoro").addEventListener("click", resetPomodoro); $("#focusMode").addEventListener("click", () => switchPomodoroMode("focus")); $("#breakMode").addEventListener("click", () => switchPomodoroMode("break"));
-window.addEventListener("wheel", (event) => { if (settingsPanel.classList.contains("open") || event.target.closest(".todo-list, .event-list, .settings-panel, .memo-textarea")) return; event.preventDefault(); if (wheelLocked || Math.abs(event.deltaY) < 18) return; wheelLocked = true; goToPage(event.deltaY > 0 ? 2 : 1); setTimeout(() => { wheelLocked = false; }, 640); }, { passive: false });
-window.addEventListener("keydown", (event) => { if (event.key === "Escape") { if (settingsPanel.classList.contains("open")) toggleSettings(false); else goToPage(1); } if (currentPage === 2 && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { if (event.key === "ArrowLeft") shiftWidget(-1); if (event.key === "ArrowRight") shiftWidget(1); } });
+function canNavigatePages() { return !state.isOverlayOpen && !state.isSettingsOpen; }
+function handleWheelNavigation(event) { if (!canNavigatePages() || event.target.closest(".todo-list, .event-list, .settings-panel, .memo-textarea, .event-modal")) return; event.preventDefault(); if (wheelLocked || Math.abs(event.deltaY) < 18) return; wheelLocked = true; goToPage(event.deltaY > 0 ? 2 : 1); setTimeout(() => { wheelLocked = false; }, 640); }
+window.addEventListener("wheel", handleWheelNavigation, { passive: false });
+window.addEventListener("keydown", (event) => { if (event.key === "Escape") { if (!eventModalBackdrop.classList.contains("hidden")) closeEventModal(); else if (state.isSettingsOpen) closeSettings(); else goToPage(1); } if (currentPage === 2 && canNavigatePages() && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { if (event.key === "ArrowLeft") shiftWidget(-1); if (event.key === "ArrowRight") shiftWidget(1); } });
 
 buildLinkSettings(); bindSettingsControls(); applySettings(); renderCalendar(); renderTodos(); renderMemo(); renderWidgetStack(); renderPomodoro(); if (pomodoro.isRunning) startPomodoro(); renderClock(); setInterval(renderClock, 1000);
