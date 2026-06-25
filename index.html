@@ -35,9 +35,9 @@
                 <div class="calendar-header">
                   <div class="panel-title-row">
                     <div>
-                      <p class="eyebrow" id="calendarPanelEyebrow">Local Calendar</p>
+                      <p class="eyebrow" id="calendarPanelEyebrow">Google Calendar Viewer</p>
                       <h2 id="calendarMonthLabel">----年--月</h2>
-                      <p id="calendarPanelDescription">月曜始まり / 完全ローカル</p>
+                      <p id="calendarPanelDescription">読み取り専用 / primary calendar</p>
                     </div>
                     <time class="panel-date" id="panelDate"></time>
                   </div>
@@ -55,8 +55,9 @@
                       <button id="prevMonth" type="button" aria-label="前月">‹</button>
                       <button class="today-button" id="todayButton" type="button">今日</button>
                       <button id="nextMonth" type="button" aria-label="次月">›</button>
-                      <button class="secondary-button" id="showEventFormMonth" type="button">予定を追加</button>
+                      <button class="secondary-button" id="syncGoogleCalendarMonth" type="button">同期</button>
                     </div>
+                    <div class="google-connection-card" id="googleConnectionState" aria-live="polite"></div>
                     <div class="calendar-weekdays" aria-hidden="true">
                       <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><span>日</span>
                     </div>
@@ -68,7 +69,7 @@
                         <p class="eyebrow">Schedule</p>
                         <h2 id="selectedDateTitle">選択日の予定</h2>
                       </div>
-                      <button class="secondary-button" id="showEventFormSchedule" type="button">予定を追加</button>
+                      <span class="readonly-badge">Read only</span>
                     </div>
                     <ul class="event-list calendar-schedule-scroll" id="eventList"></ul>
                   </section>
@@ -148,28 +149,6 @@
       </button>
     </main>
 
-    <div class="event-modal-backdrop hidden" id="eventModalBackdrop" aria-hidden="true">
-      <section class="event-modal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
-        <div class="event-modal-header">
-          <div>
-            <p class="eyebrow">Local Calendar</p>
-            <h2 id="eventModalTitle">予定を追加</h2>
-          </div>
-          <button class="close-button" id="closeEventModal" type="button" aria-label="予定追加を閉じる">×</button>
-        </div>
-        <form class="event-form" id="eventForm">
-          <label>タイトル<input id="eventTitle" type="text" placeholder="数学の授業" autocomplete="off" required /></label>
-          <label>日付<input id="eventDate" type="date" required /></label>
-          <label>時間<input id="eventTime" type="time" /></label>
-          <label>メモ<textarea id="eventNote" placeholder="教室 2-3"></textarea></label>
-          <div class="form-actions">
-            <button class="secondary-button" type="button" id="cancelEvent">Cancel</button>
-            <button class="primary-button" type="submit">Save</button>
-          </div>
-        </form>
-      </section>
-    </div>
-
     <aside class="settings-panel" id="settingsPanel" aria-label="設定パネル" aria-hidden="true">
       <div class="settings-header"><div><p class="eyebrow">Mono Tab</p><h2>Customize</h2></div><button class="close-button" id="closeSettings" type="button" aria-label="設定を閉じる">×</button></div>
       <div class="settings-content">
@@ -177,6 +156,8 @@
         <section class="settings-section"><h3>Date</h3><label>Style<select id="dateStyle"><option value="full">Full</option><option value="simple">Simple</option><option value="dot">Dot</option><option value="slash">Slash</option><option value="hidden">Hidden</option></select></label><label class="toggle"><input id="showWeekday" type="checkbox" /> 曜日を表示する</label></section>
         <section class="settings-section"><h3>Search</h3><label class="toggle"><input id="showSearch" type="checkbox" /> 検索バーを表示する</label><label>Engine<select id="searchEngine"><option value="google">Google</option><option value="brave">Brave Search</option><option value="duckduckgo">DuckDuckGo</option><option value="bing">Bing</option></select></label></section>
         <section class="settings-section"><h3>Quick Links</h3><div id="linkSettings" class="link-settings"></div></section>
+
+        <section class="settings-section" id="googleCalendarSettings"><h3>Google Calendar</h3><p>読み取り専用で予定を表示します。予定の追加・編集・削除はGoogle Calendar本体で行ってください。</p><div class="settings-google-state" id="settingsGoogleConnectionState"></div></section>
         <section class="settings-section"><h3>Look</h3><label>Background<select id="backgroundSelect"><option value="pure-black">Pure Black</option><option value="soft-glow">Soft Glow</option><option value="dot-grid">Dot Grid</option><option value="noise">Noise</option><option value="diagonal-lines">Diagonal Lines</option></select></label><label>Layout<select id="layout"><option value="top">Top</option><option value="center">Center</option><option value="bottom">Bottom</option></select></label><label>Contrast<select id="contrast"><option value="high-contrast">High Contrast</option><option value="soft-gray">Soft Gray</option><option value="dim">Dim</option></select></label></section>
       </div>
     </aside>
