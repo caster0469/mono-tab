@@ -35,32 +35,42 @@
                 <div class="calendar-header">
                   <div class="panel-title-row">
                     <div>
-                      <p class="eyebrow">Local Calendar</p>
+                      <p class="eyebrow" id="calendarPanelEyebrow">Local Calendar</p>
                       <h2 id="calendarMonthLabel">----年--月</h2>
-                      <p>月曜始まり / 完全ローカル</p>
+                      <p id="calendarPanelDescription">月曜始まり / 完全ローカル</p>
                     </div>
                     <time class="panel-date" id="panelDate"></time>
                   </div>
-                  <div class="calendar-toolbar" aria-label="カレンダー操作">
-                    <button id="prevMonth" type="button" aria-label="前月">‹</button>
-                    <button class="today-button" id="todayButton" type="button">今日</button>
-                    <button id="nextMonth" type="button" aria-label="次月">›</button>
+                  <div class="calendar-page-meta">
+                    <span id="calendarPagePosition">1 / 2</span>
+                    <div class="calendar-page-controls" aria-label="Calendar pages">
+                      <button id="prevCalendarPage" type="button" aria-label="前のCalendarページ">‹</button>
+                      <button id="nextCalendarPage" type="button" aria-label="次のCalendarページ">›</button>
+                    </div>
                   </div>
                 </div>
-                <div class="calendar-scroll-area">
-                  <div class="calendar-weekdays" aria-hidden="true">
-                    <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><span>日</span>
-                  </div>
-                  <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="月間カレンダー"></div>
-                  <section class="selected-events selected-events-card" aria-labelledby="selectedDateTitle">
+                <div class="calendar-viewport" id="calendarViewport">
+                  <section class="calendar-internal-page calendar-month-view active" id="calendarMonthView" aria-label="月間カレンダー">
+                    <div class="calendar-toolbar" aria-label="カレンダー操作">
+                      <button id="prevMonth" type="button" aria-label="前月">‹</button>
+                      <button class="today-button" id="todayButton" type="button">今日</button>
+                      <button id="nextMonth" type="button" aria-label="次月">›</button>
+                      <button class="secondary-button" id="showEventFormMonth" type="button">予定を追加</button>
+                    </div>
+                    <div class="calendar-weekdays" aria-hidden="true">
+                      <span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span><span>日</span>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="月間カレンダー"></div>
+                  </section>
+                  <section class="calendar-internal-page calendar-schedule-view" id="calendarScheduleView" aria-labelledby="selectedDateTitle">
                     <div class="selected-events-header">
                       <div>
                         <p class="eyebrow">Schedule</p>
                         <h2 id="selectedDateTitle">選択日の予定</h2>
                       </div>
-                      <button class="secondary-button" id="showEventForm" type="button">予定を追加</button>
+                      <button class="secondary-button" id="showEventFormSchedule" type="button">予定を追加</button>
                     </div>
-                    <ul class="event-list" id="eventList"></ul>
+                    <ul class="event-list calendar-schedule-scroll" id="eventList"></ul>
                   </section>
                 </div>
               </section>

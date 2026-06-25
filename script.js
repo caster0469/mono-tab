@@ -5,6 +5,7 @@ const TODOS_KEY = "mono-tab-todos";
 const MEMO_KEY = "mono-tab-memo";
 const POMODORO_KEY = "mono-tab-pomodoro";
 const ACTIVE_WIDGET_KEY = "mono-tab-active-widget";
+const CALENDAR_PAGE_KEY = "mono-tab-calendar-page";
 const FOCUS_SECONDS = 25 * 60;
 const BREAK_SECONDS = 5 * 60;
 
@@ -41,6 +42,11 @@ const calendarGrid = $("#calendarGrid");
 const calendarMonthLabel = $("#calendarMonthLabel");
 const selectedDateTitle = $("#selectedDateTitle");
 const eventList = $("#eventList");
+const calendarPanelEyebrow = $("#calendarPanelEyebrow");
+const calendarPanelDescription = $("#calendarPanelDescription");
+const calendarPagePosition = $("#calendarPagePosition");
+const calendarMonthView = $("#calendarMonthView");
+const calendarScheduleView = $("#calendarScheduleView");
 const eventForm = $("#eventForm");
 const eventTitle = $("#eventTitle");
 const eventDate = $("#eventDate");
@@ -48,7 +54,8 @@ const eventTime = $("#eventTime");
 const eventNote = $("#eventNote");
 const eventModalBackdrop = $("#eventModalBackdrop");
 const closeEventModalButton = $("#closeEventModal");
-const showEventForm = $("#showEventForm");
+const showEventFormMonth = $("#showEventFormMonth");
+const showEventFormSchedule = $("#showEventFormSchedule");
 const cancelEvent = $("#cancelEvent");
 const todoForm = $("#todoForm");
 const todoInput = $("#todoInput");
@@ -82,6 +89,7 @@ let events = loadEvents();
 let todos = loadTodos();
 let memo = loadMemo();
 let activeWidget = Number(localStorage.getItem(ACTIVE_WIDGET_KEY)) || 0;
+let calendarPage = Number(localStorage.getItem(CALENDAR_PAGE_KEY)) === 2 ? 2 : 1;
 let pomodoro = loadPomodoro();
 let pomodoroTimer = null;
 const today = new Date();
@@ -133,14 +141,26 @@ function destinationFor(input) { const value = input.trim(); if (/^https?:\/\//i
 function loadEvents() { const stored = readJson(EVENTS_KEY, []); return Array.isArray(stored) ? stored : []; }
 function saveEvents() { writeJson(EVENTS_KEY, events); }
 function getEventsForDate(dateString) { return events.filter((event) => event.date === dateString).sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99") || (a.createdAt || 0) - (b.createdAt || 0)); }
-function hasEvents(dateString) { return getEventsForDate(dateString).length > 0; }
 function getVisibleEventLimit() { return window.matchMedia("(max-width: 1365px), (max-height: 760px)").matches ? 1 : 2; }
-function renderCalendar() { calendarGrid.textContent = ""; const year = visibleMonth.getFullYear(); const month = visibleMonth.getMonth(); calendarMonthLabel.textContent = `${year}年${month + 1}月`; renderMonthGrid(year, month); renderSelectedDateEvents(); }
+function renderCalendarPanel() {
+  calendarPage = calendarPage === 2 ? 2 : 1;
+  calendarPagePosition.textContent = `${calendarPage} / 2`;
+  calendarMonthView.classList.toggle("active", calendarPage === 1);
+  calendarScheduleView.classList.toggle("active", calendarPage === 2);
+  renderCalendarMonthView();
+  renderCalendarScheduleView();
+  localStorage.setItem(CALENDAR_PAGE_KEY, String(calendarPage));
+}
+function renderCalendar() { renderCalendarPanel(); }
+function renderCalendarMonthView() { calendarGrid.textContent = ""; const year = visibleMonth.getFullYear(); const month = visibleMonth.getMonth(); calendarMonthLabel.textContent = calendarPage === 1 ? `${year}年${month + 1}月` : "SCHEDULE"; calendarPanelEyebrow.textContent = calendarPage === 1 ? "Local Calendar" : "Local Calendar"; calendarPanelDescription.textContent = calendarPage === 1 ? "月曜始まり / 完全ローカル" : formatJapaneseDate(selectedDate); renderMonthGrid(year, month); }
+function renderCalendarScheduleView() { selectedDateTitle.textContent = formatJapaneseDate(selectedDate); eventList.textContent = ""; const list = getEventsForDate(selectedDate); if (!list.length) { const empty = document.createElement("li"); empty.className = "empty-state schedule-empty"; empty.textContent = "予定はありません"; eventList.append(empty); return; } list.forEach((event) => { const item = document.createElement("li"); item.className = "event-item schedule-event-item"; item.innerHTML = `<div class="event-time"><time>${event.time || "時間なし"}</time></div><div class="event-body"><strong></strong><p></p></div>`; item.querySelector("strong").textContent = event.title; item.querySelector("p").textContent = event.note || ""; const del = document.createElement("button"); del.type = "button"; del.textContent = "×"; del.setAttribute("aria-label", `${event.title} を削除`); del.addEventListener("click", () => deleteEvent(event.id)); item.append(del); eventList.append(item); }); }
+function setCalendarPage(page) { calendarPage = page === 2 ? 2 : 1; renderCalendarPanel(); }
+function nextCalendarPage() { setCalendarPage(calendarPage === 1 ? 2 : 1); }
+function previousCalendarPage() { setCalendarPage(calendarPage === 1 ? 2 : 1); }
 function renderMonthGrid(year = visibleMonth.getFullYear(), month = visibleMonth.getMonth()) { const first = new Date(year, month, 1); const startOffset = (first.getDay() + 6) % 7; const start = new Date(year, month, 1 - startOffset); for (let i = 0; i < 42; i += 1) { const day = new Date(start); day.setDate(start.getDate() + i); calendarGrid.append(renderCalendarDay(day, month)); } }
-function renderCalendarDay(day, visibleMonthIndex) { const dateString = formatDate(day); const dayEvents = getEventsForDate(dateString); const button = document.createElement("button"); button.type = "button"; button.className = "calendar-day"; button.setAttribute("role", "gridcell"); button.setAttribute("aria-label", `${formatJapaneseDate(dateString)}${dayEvents.length ? ` ${dayEvents.length}件の予定` : ""}`); if (day.getMonth() !== visibleMonthIndex) button.classList.add("muted"); if (dateString === formatDate(new Date())) button.classList.add("today"); if (dateString === selectedDate) button.classList.add("selected"); const number = document.createElement("span"); number.className = "calendar-day-number"; number.textContent = day.getDate(); const eventWrap = document.createElement("div"); eventWrap.className = "calendar-day-events"; const limit = getVisibleEventLimit(); dayEvents.slice(0, limit).forEach((event) => { const chip = document.createElement("span"); chip.className = "calendar-event-chip"; chip.textContent = `${event.time ? `${event.time} ` : ""}${event.title}`; eventWrap.append(chip); }); if (dayEvents.length > limit) { const more = document.createElement("span"); more.className = "calendar-more"; more.textContent = `+${dayEvents.length - limit} more`; eventWrap.append(more); } button.append(number, eventWrap); button.addEventListener("click", () => { selectedDate = dateString; renderCalendar(); }); return button; }
-function renderSelectedDateEvents() { selectedDateTitle.textContent = formatJapaneseDate(selectedDate); eventList.textContent = ""; const list = getEventsForDate(selectedDate); if (!list.length) { const empty = document.createElement("li"); empty.className = "empty-state"; empty.textContent = "予定はありません"; eventList.append(empty); return; } list.forEach((event) => { const item = document.createElement("li"); item.className = "event-item"; item.innerHTML = `<div><time>${event.time || "終日"}</time><strong></strong><p></p></div>`; item.querySelector("strong").textContent = event.title; item.querySelector("p").textContent = event.note || ""; const del = document.createElement("button"); del.type = "button"; del.textContent = "×"; del.setAttribute("aria-label", `${event.title} を削除`); del.addEventListener("click", () => deleteEvent(event.id)); item.append(del); eventList.append(item); }); }
-function addEvent(event) { events.push(event); saveEvents(); selectedDate = event.date; visibleMonth = new Date(`${event.date}T00:00:00`); visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1); renderCalendar(); }
-function deleteEvent(id) { events = events.filter((event) => event.id !== id); saveEvents(); renderCalendar(); }
+function renderCalendarDay(day, visibleMonthIndex) { const dateString = formatDate(day); const dayEvents = getEventsForDate(dateString); const button = document.createElement("button"); button.type = "button"; button.className = "calendar-day"; button.setAttribute("role", "gridcell"); button.setAttribute("aria-label", `${formatJapaneseDate(dateString)}${dayEvents.length ? ` ${dayEvents.length}件の予定` : ""}`); if (day.getMonth() !== visibleMonthIndex) button.classList.add("muted"); if (dateString === formatDate(new Date())) button.classList.add("today"); if (dateString === selectedDate) button.classList.add("selected"); const number = document.createElement("span"); number.className = "calendar-day-number"; number.textContent = day.getDate(); const eventWrap = document.createElement("div"); eventWrap.className = "calendar-day-events"; const limit = getVisibleEventLimit(); dayEvents.slice(0, limit).forEach((event) => { const chip = document.createElement("span"); chip.className = "calendar-event-chip"; chip.textContent = `${event.time ? `${event.time} ` : ""}${event.title}`; eventWrap.append(chip); }); if (dayEvents.length > limit) { const more = document.createElement("span"); more.className = "calendar-more"; more.textContent = `+${dayEvents.length - limit} more`; eventWrap.append(more); } button.append(number, eventWrap); button.addEventListener("click", () => { selectedDate = dateString; renderCalendarPanel(); }); return button; }
+function addEvent(event) { events.push(event); saveEvents(); selectedDate = event.date; visibleMonth = new Date(`${event.date}T00:00:00`); visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1); renderCalendarPanel(); }
+function deleteEvent(id) { events = events.filter((event) => event.id !== id); saveEvents(); renderCalendarPanel(); }
 function openEventModal(date = selectedDate) { eventForm.reset(); eventDate.value = date; eventModalBackdrop.classList.remove("hidden"); eventModalBackdrop.setAttribute("aria-hidden", "false"); setOverlayOpen(true); requestAnimationFrame(() => eventTitle.focus()); }
 function closeEventModal() { eventModalBackdrop.classList.add("hidden"); eventModalBackdrop.setAttribute("aria-hidden", "true"); eventForm.reset(); setOverlayOpen(false); }
 function handleEventFormSubmit(event) { event.preventDefault(); const title = eventTitle.value.trim(); if (!title) return; addEvent({ id: makeId("event"), title, date: eventDate.value || selectedDate, time: eventTime.value, note: eventNote.value.trim(), createdAt: Date.now() }); closeEventModal(); }
@@ -178,14 +198,15 @@ searchForm.addEventListener("submit", (e) => { e.preventDefault(); const query =
 settingsButton.addEventListener("click", () => toggleSettings()); closeSettingsButton.addEventListener("click", closeSettings);
 $("#goCalendar").addEventListener("click", () => goToPage(2)); $("#goHome").addEventListener("click", () => goToPage(1)); $("#returnHome").addEventListener("click", () => goToPage(1));
 $("#prevMonth").addEventListener("click", () => { visibleMonth.setMonth(visibleMonth.getMonth() - 1); renderCalendar(); }); $("#nextMonth").addEventListener("click", () => { visibleMonth.setMonth(visibleMonth.getMonth() + 1); renderCalendar(); }); $("#todayButton").addEventListener("click", () => { const now = new Date(); visibleMonth = new Date(now.getFullYear(), now.getMonth(), 1); selectedDate = formatDate(now); renderCalendar(); });
-showEventForm.addEventListener("click", () => openEventModal(selectedDate)); cancelEvent.addEventListener("click", closeEventModal); closeEventModalButton.addEventListener("click", closeEventModal); eventModalBackdrop.addEventListener("click", (event) => { if (event.target === eventModalBackdrop) closeEventModal(); }); eventForm.addEventListener("submit", handleEventFormSubmit);
+showEventFormMonth.addEventListener("click", () => openEventModal(selectedDate)); showEventFormSchedule.addEventListener("click", () => openEventModal(selectedDate));
+$("#prevCalendarPage").addEventListener("click", previousCalendarPage); $("#nextCalendarPage").addEventListener("click", nextCalendarPage); cancelEvent.addEventListener("click", closeEventModal); closeEventModalButton.addEventListener("click", closeEventModal); eventModalBackdrop.addEventListener("click", (event) => { if (event.target === eventModalBackdrop) closeEventModal(); }); eventForm.addEventListener("submit", handleEventFormSubmit);
 todoForm.addEventListener("submit", (e) => { e.preventDefault(); addTodo(todoInput.value); todoInput.value = ""; }); clearCompletedTodos.addEventListener("click", clearCompleted);
 memoTextarea.addEventListener("input", saveMemo);
 $("#prevWidget").addEventListener("click", () => shiftWidget(-1)); $("#nextWidget").addEventListener("click", () => shiftWidget(1));
 $("#startPomodoro").addEventListener("click", startPomodoro); $("#pausePomodoro").addEventListener("click", pausePomodoro); $("#resetPomodoro").addEventListener("click", resetPomodoro); $("#focusMode").addEventListener("click", () => switchPomodoroMode("focus")); $("#breakMode").addEventListener("click", () => switchPomodoroMode("break"));
 function canNavigatePages() { return !state.isOverlayOpen && !state.isSettingsOpen; }
-function handleWheelNavigation(event) { if (!canNavigatePages() || event.target.closest(".todo-list, .event-list, .settings-panel, .memo-textarea, .event-modal")) return; event.preventDefault(); if (wheelLocked || Math.abs(event.deltaY) < 18) return; wheelLocked = true; goToPage(event.deltaY > 0 ? 2 : 1); setTimeout(() => { wheelLocked = false; }, 640); }
+function handleWheelNavigation(event) { if (!canNavigatePages() || event.target.closest(".todo-list, .event-list, .calendar-schedule-scroll, .calendar-page-controls, .calendar-toolbar, .settings-panel, .memo-textarea, .event-modal")) return; event.preventDefault(); if (wheelLocked || Math.abs(event.deltaY) < 18) return; wheelLocked = true; goToPage(event.deltaY > 0 ? 2 : 1); setTimeout(() => { wheelLocked = false; }, 640); }
 window.addEventListener("wheel", handleWheelNavigation, { passive: false });
 window.addEventListener("keydown", (event) => { if (event.key === "Escape") { if (!eventModalBackdrop.classList.contains("hidden")) closeEventModal(); else if (state.isSettingsOpen) closeSettings(); else goToPage(1); } if (currentPage === 2 && canNavigatePages() && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) { if (event.key === "ArrowLeft") shiftWidget(-1); if (event.key === "ArrowRight") shiftWidget(1); } });
 
-buildLinkSettings(); bindSettingsControls(); applySettings(); renderCalendar(); renderTodos(); renderMemo(); renderWidgetStack(); renderPomodoro(); if (pomodoro.isRunning) startPomodoro(); renderClock(); setInterval(renderClock, 1000);
+buildLinkSettings(); bindSettingsControls(); applySettings(); renderCalendarPanel(); renderTodos(); renderMemo(); renderWidgetStack(); renderPomodoro(); if (pomodoro.isRunning) startPomodoro(); renderClock(); setInterval(renderClock, 1000);
