@@ -60,15 +60,6 @@
                       </div>
                       <button class="secondary-button" id="showEventForm" type="button">予定を追加</button>
                     </div>
-                    <form class="event-form hidden" id="eventForm">
-                      <input id="eventTitle" type="text" placeholder="タイトル" autocomplete="off" required />
-                      <input id="eventTime" type="time" />
-                      <textarea id="eventNote" placeholder="メモ"></textarea>
-                      <div class="form-actions">
-                        <button class="secondary-button" type="button" id="cancelEvent">Cancel</button>
-                        <button class="primary-button" type="submit">Save</button>
-                      </div>
-                    </form>
                     <ul class="event-list" id="eventList"></ul>
                   </section>
                 </div>
@@ -146,6 +137,28 @@
         <span aria-hidden="true">⚙</span>
       </button>
     </main>
+
+    <div class="event-modal-backdrop hidden" id="eventModalBackdrop" aria-hidden="true">
+      <section class="event-modal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+        <div class="event-modal-header">
+          <div>
+            <p class="eyebrow">Local Calendar</p>
+            <h2 id="eventModalTitle">予定を追加</h2>
+          </div>
+          <button class="close-button" id="closeEventModal" type="button" aria-label="予定追加を閉じる">×</button>
+        </div>
+        <form class="event-form" id="eventForm">
+          <label>タイトル<input id="eventTitle" type="text" placeholder="数学の授業" autocomplete="off" required /></label>
+          <label>日付<input id="eventDate" type="date" required /></label>
+          <label>時間<input id="eventTime" type="time" /></label>
+          <label>メモ<textarea id="eventNote" placeholder="教室 2-3"></textarea></label>
+          <div class="form-actions">
+            <button class="secondary-button" type="button" id="cancelEvent">Cancel</button>
+            <button class="primary-button" type="submit">Save</button>
+          </div>
+        </form>
+      </section>
+    </div>
 
     <aside class="settings-panel" id="settingsPanel" aria-label="設定パネル" aria-hidden="true">
       <div class="settings-header"><div><p class="eyebrow">Mono Tab</p><h2>Customize</h2></div><button class="close-button" id="closeSettings" type="button" aria-label="設定を閉じる">×</button></div>
