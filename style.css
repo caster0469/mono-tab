@@ -85,7 +85,6 @@ label { display: grid; gap: 7px; color: var(--sub-text); font-size: .84rem; }
 .toggle { display: flex; align-items: center; gap: clamp(8px, .8vw, 10px); flex-wrap: wrap; }
 select, input[type="text"], input[type="url"], input[type="date"], input[type="time"], textarea { width: 100%; min-height: 40px; padding: 0 12px; background: rgba(255,255,255,.045); border: 1px solid var(--border); border-radius: 12px; outline: none; }
 textarea { padding: 12px; resize: none; }
-.event-form textarea { min-height: clamp(90px, 16vh, 150px); }
 .link-slot { display: grid; grid-template-columns: 82px 1fr; gap: 8px 10px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 16px; }
 .link-slot input { grid-column: 1 / -1; }
 
@@ -125,9 +124,6 @@ textarea { padding: 12px; resize: none; }
 .selected-events { min-height: 0; display: flex; flex-direction: column; gap: var(--space-sm); overflow: hidden; }
 .selected-events-card { flex: 0 0 auto; max-height: clamp(128px, 24vh, 250px); margin-top: var(--space-sm); padding: var(--space-md); background: rgba(0,0,0,.16); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; overflow: hidden; }
 .selected-events-card .event-list { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
-.event-form { display: grid; gap: var(--space-md); }
-.event-form label { color: var(--sub-text); }
-.event-form .form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); flex-wrap: wrap; position: sticky; bottom: 0; padding-top: var(--space-sm); background: linear-gradient(transparent, rgba(12,12,12,.96) 28%); }
 .form-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); flex-wrap: wrap; }
 .hidden { display: none !important; }
 .event-list, .todo-list { flex: 1; min-height: 0; margin: 0; padding: 0; list-style: none; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -140,9 +136,6 @@ textarea { padding: 12px; resize: none; }
 .primary-button, .secondary-button { min-height: var(--button-size); padding: 0 var(--space-md); }
 .primary-button { background: #eeeeee; color: #050505; }
 .secondary-button { background: rgba(255,255,255,.045); color: var(--sub-text); }
-.event-modal-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px 16px; background: rgba(0,0,0,.58); backdrop-filter: blur(12px); }
-.event-modal { width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain; border-radius: 18px; border: 1px solid var(--border); background: rgba(12,12,12,.96); box-shadow: 0 28px 110px rgba(0,0,0,.68), inset 0 1px 0 rgba(255,255,255,.05); padding: clamp(18px, 2.2vw, 28px); }
-.event-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); margin-bottom: var(--space-md); }
 
 .widget-stack { flex: 1; min-height: 0; padding: var(--card-padding); display: grid; grid-template-rows: auto 1fr auto; gap: var(--space-lg); overflow: hidden; }
 .widget-stack-header { margin-bottom: var(--space-sm); }
@@ -171,11 +164,9 @@ textarea { padding: 12px; resize: none; }
 ::-webkit-scrollbar-track { background: transparent; }
 .calendar-scroll-area::-webkit-scrollbar,
 .selected-events-card::-webkit-scrollbar,
-.event-modal::-webkit-scrollbar,
 .settings-panel::-webkit-scrollbar { width: 6px; }
 .calendar-scroll-area::-webkit-scrollbar-thumb,
 .selected-events-card::-webkit-scrollbar-thumb,
-.event-modal::-webkit-scrollbar-thumb,
 .settings-panel::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 8px; }
 @media (max-width: 900px), (max-height: 760px) {
   .dashboard-page { padding: var(--panel-gap); }
@@ -288,3 +279,20 @@ textarea { padding: 12px; resize: none; }
   .schedule-event-item { grid-template-columns: 1fr auto; }
   .schedule-event-item .event-time { grid-column: 1 / -1; }
 }
+
+/* Google Calendar viewer */
+.google-connection-card { display: grid; gap: 8px; margin-top: var(--space-md); margin-bottom: var(--space-sm); padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: rgba(0,0,0,.18); }
+.google-status-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.google-status-line strong { font-weight: 400; }
+.google-status-line span, .readonly-badge { color: var(--sub-text); font-size: var(--font-sm); letter-spacing: .12em; text-transform: uppercase; }
+.google-connection-card p, .settings-google-state p { margin: 0; color: var(--sub-text); font-size: .8rem; line-height: 1.55; }
+.google-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.google-actions button { min-height: 34px; padding: 0 12px; border-radius: 14px; }
+.google-actions button:disabled { cursor: progress; opacity: .55; }
+.settings-google-state { display: grid; gap: 8px; }
+.settings-section p { color: var(--sub-text); font-size: .84rem; line-height: 1.65; }
+.google-event-item { grid-template-columns: minmax(90px, 130px) 1fr; align-items: start; }
+.google-event-item .event-time { color: var(--sub-text); font-size: .82rem; line-height: 1.5; }
+.google-event-item a { display: inline-flex; width: fit-content; margin-top: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 12px; color: var(--main-text); text-decoration: none; font-size: .78rem; }
+.google-event-item a:hover { background: var(--hover-background); color: var(--hover-text); border-color: var(--hover-background); }
+@media (max-width: 680px) { .google-event-item { grid-template-columns: 1fr; } }

@@ -2,8 +2,20 @@
   "manifest_version": 3,
   "name": "Mono Tab",
   "version": "1.0.0",
-  "description": "A simple monochrome new tab page with clock, search, and quick links for Brave / Chromium.",
-  "permissions": [],
+  "description": "A simple monochrome new tab page with clock, search, Google Calendar viewer, and quick links for Brave / Chromium.",
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.googleapis.com/*"
+  ],
+  "oauth2": {
+    "client_id": "YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar.readonly"
+    ]
+  },
   "chrome_url_overrides": {
     "newtab": "index.html"
   }
